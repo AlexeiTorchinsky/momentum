@@ -1,9 +1,10 @@
+import playList from './playList.js';
+// console.log(playList);
 const time = document.querySelector('.time');
 const date1 = document.querySelector('.date');
 const greeting = document.querySelector('.greeting');
 const name = document.querySelector('.name');
 const body = document.querySelector('body');
-let randomNum = getRandomNum(1, 20);
 const slideNext = document.querySelector('.slide-next');
 const slidePrev = document.querySelector('.slide-prev');
 const weatherIcon = document.querySelector('.weather-icon');
@@ -16,7 +17,11 @@ const weatherError = document.querySelector('.weather-error');
 const quote = document.querySelector('.quote');
 const author = document.querySelector('.author');
 
+let randomNum = getRandomNum(1, 20);
+let isPlay = false;
 
+const playListContainer = document.querySelector('.play-list');
+console.log(playListContainer.children)
 
 function showTime() {
   const date = new Date();
@@ -97,7 +102,6 @@ function setBg() {
 setBg();
 
 function getSlideNext() {
-  // randomNum = getRandomNum();
   if (randomNum <= 20) {
     randomNum += 1;
   }
@@ -107,7 +111,6 @@ function getSlideNext() {
   setBg()
 }
 function getSlidePrev() {
-  // randomNum = getRandomNum();
   if (randomNum >= 1) {
     randomNum -= 1;
   }
@@ -136,9 +139,9 @@ async function getWeather() {
   weatherError.textContent = undefined;
   weatherIcon.className = 'weather-icon owf';
   weatherIcon.classList.add(`owf-${data.weather[0].id}`);
-  temperature.textContent = `${Math.ceil(data.main.temp)}°C`;
+  temperature.textContent = `${Math.round(data.main.temp)}°C`;
   weatherDescription.textContent = data.weather[0].description;
-  wind.textContent = `Wind speed: ${Math.ceil(data.wind.speed)} m/s`;
+  wind.textContent = `Wind speed: ${Math.round(data.wind.speed)} m/s`;
   humidity.textContent = `Humidity: ${data.main.humidity} %`;
   // console.log(data.weather[0].id)
   // console.log(data);
@@ -157,8 +160,100 @@ async function getQuotes() {
   let quoteNum = getRandomNum(0, 1547);
   quote.textContent = data[quoteNum].text;
   author.textContent = data[quoteNum].author;
-  console.log(data);
+  // console.log(data);
 }
 getQuotes();
 
 document.querySelector('.change-quote').addEventListener('click', getQuotes);
+
+let playNum = 0;
+const playBtn = document.querySelector('.play');
+const audio = new Audio();
+
+
+function toggleBtn() {
+  playBtn.classList.toggle('pause');
+}
+function playAudio() {
+  playListContainer.children[playNum].classList.add('item-active');
+  audio.src = playList[playNum].src;
+  audio.currentTime = 0;
+  console.log(playNum)
+  audio.addEventListener('ended', playNext);
+  if(!isPlay) {
+    audio.play();
+    isPlay = true;
+   
+  } else {
+    audio.pause();
+    isPlay = false;
+    
+  }
+  
+}
+
+
+function playAudioPrevNext() {
+  audio.src = playList[playNum].src;
+  // console.log(playList[playNum].src);
+  audio.currentTime = 0;
+  if (!isPlay) {
+    audio.play();
+    isPlay = true;
+    playBtn.classList.add('pause');
+    // playListContainer.children[playNum].classList.toggle('item-active')
+  } else {
+    audio.play(); 
+    // playListContainer.children[playNum].classList.remove('item-active');
+  }
+}
+function playNext() {
+  playListContainer.children[playNum].classList.remove('item-active');
+  console.log(playNum)
+  if (playNum <= 4) {
+    playNum++;
+    console.log(playNum);
+  }
+  if (playNum === 4) {
+    playNum = 0;
+  }
+  
+  playListContainer.children[playNum].classList.add('item-active');
+  
+  playAudioPrevNext();
+}
+
+function playPrev() {
+  playListContainer.children[playNum].classList.remove('item-active');
+  if(playNum < 1) {
+    playNum = 4
+  }
+  if (playNum >= 1) {
+    playNum--;
+  }
+  
+  // console.log(playNum);
+  playListContainer.children[playNum].classList.add('item-active');
+  playAudioPrevNext();
+}
+
+playBtn.addEventListener('click', playAudio);
+playBtn.addEventListener('click', toggleBtn);
+
+const playNextBtn = document.querySelector('.play-next');
+const playPrevBtn = document.querySelector('.play-prev');
+playNextBtn.addEventListener('click', playNext);
+playPrevBtn.addEventListener('click', playPrev);
+
+
+
+playList.forEach(el => {
+  const li = document.createElement('li');
+  li.classList.add('play-item');
+  li.textContent = el.title;
+  playListContainer.append(li);
+});
+
+
+
+
