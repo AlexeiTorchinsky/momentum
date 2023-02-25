@@ -101,7 +101,7 @@ body {
 /* style for the total length of the track */
 .durationTime {
   position: absolute;
-  height: 50px;
+  /* height: 50px; */
   width: 50px;
   top: 49px;
   left: 130px;

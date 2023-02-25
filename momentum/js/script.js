@@ -177,13 +177,14 @@ function playAudio() {
   audio.src = playList[playNum].src;
   // audio.currentTime = 0;
   durationTime.textContent = playList[playNum].duration;
-  
-  
   trackTitle.textContent = playList[playNum].title;
   audio.addEventListener('ended', playNext);
+
+
   if(!isPlay) {
     audio.play();
     isPlay = true;
+    progressBar.max = audio.duration;
     audio.currentTime = progressBar.value;
     progressBar.classList.add('progressBar-active');
     audio.addEventListener('timeupdate', () => {
@@ -212,16 +213,17 @@ function playAudioPrevNext() {
   durationTime.textContent = playList[playNum].duration;
   document.querySelector('.currentTime').textContent = audio.currentTime;
   trackTitle.textContent = playList[playNum].title;
-  
   audio.currentTime = 0;
   if (!isPlay) {
     audio.play();
     isPlay = true;
     playBtn.classList.add('pause');
     progressBar.classList.add('progressBar-active');
+    progressBar.max = audio.duration;
     audio.addEventListener('timeupdate', () => {
     document.querySelector('.currentTime').innerHTML = (formatTime(audio.currentTime));
     progressBar.value = audio.currentTime;
+    
     });
     
   } else {
@@ -244,7 +246,7 @@ function playNext() {
   playAudioPrevNext();
 }
 
-// playListContainer.children[playNum].addEventListener('click', playAudio);
+
 
 function playPrev() {
   playListContainer.children[playNum].classList.remove('item-active');
@@ -264,6 +266,7 @@ playBtn.addEventListener('click', toggleBtn);
 
 const playNextBtn = document.querySelector('.play-next');
 const playPrevBtn = document.querySelector('.play-prev');
+
 playNextBtn.addEventListener('click', playNext);
 playPrevBtn.addEventListener('click', playPrev);
 
@@ -274,10 +277,39 @@ playList.forEach(el => {
   li.classList.add('play-item');
   li.textContent = el.title;
   playListContainer.append(li);
-  // li.addEventListener('click',  () => {
-    
-  // });
 });
+
+// function playTrack() {
+
+//   const tracks = document.querySelectorAll('.play-item');
+//   tracks.forEach((el, i) => el.addEventListener('click', () => {
+//   el.classList.add('item-active');
+//   audio.src = playList[i].src;
+//   durationTime.textContent = playList[i].duration;
+//   trackTitle.textContent = playList[i].title;
+//   // audio.addEventListener('ended', playNext);
+
+
+//   if(!isPlay) {
+//     audio.play();
+//     isPlay = true;
+//     progressBar.max = audio.duration;
+//     audio.currentTime = progressBar.value;
+//     playBtn.classList.add('pause');
+//     progressBar.classList.add('progressBar-active');
+//     audio.addEventListener('timeupdate', () => {
+//     document.querySelector('.currentTime').innerHTML = (formatTime(audio.currentTime));
+//     progressBar.value = audio.currentTime;
+//     });
+//   } else {
+//     audio.pause();
+//     audio.currentTime = progressBar.value;
+//     isPlay = false;
+//   }
+//  }))
+// }
+// playTrack();
+
 
 const soundOff = document.querySelector('.sound-off');
 function turnSoundOff() {
