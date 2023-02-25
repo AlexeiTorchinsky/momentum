@@ -1,5 +1,5 @@
 import playList from './playList.js';
-// console.log(playList);
+
 const time = document.querySelector('.time');
 const date1 = document.querySelector('.date');
 const greeting = document.querySelector('.greeting');
@@ -16,6 +16,10 @@ const city = document.querySelector('.city');
 const weatherError = document.querySelector('.weather-error'); 
 const quote = document.querySelector('.quote');
 const author = document.querySelector('.author');
+const durationTime = document.querySelector('.durationTime');
+const trackTitle = document.querySelector('.title');
+const progressBar = document.querySelector('#progress-bar');
+
 
 let randomNum = getRandomNum(1, 20);
 let isPlay = false;
@@ -77,9 +81,6 @@ function getLocalStorage() {
 }
 window.addEventListener("load", getLocalStorage);
 
-// function getRandomNum() {
-//   return Math.floor(Math.random() * 20 + 1); 
-// }
 function getRandomNum(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -129,7 +130,7 @@ async function getWeather() {
   const data = await res.json(); 
   // console.log(data.weather[0].id, data.weather[0].description, data.main.temp);
   if (data.weather === undefined) {
-    weatherError.textContent = 'Error! city not found, please choose another one';
+    weatherError.textContent = 'Error! City not found, please choose another one';
     temperature.textContent = undefined;
     weatherDescription.textContent = undefined;
     weatherIcon.className = 'weather-icon owf';
@@ -143,8 +144,6 @@ async function getWeather() {
   weatherDescription.textContent = data.weather[0].description;
   wind.textContent = `Wind speed: ${Math.round(data.wind.speed)} m/s`;
   humidity.textContent = `Humidity: ${data.main.humidity} %`;
-  // console.log(data.weather[0].id)
-  // console.log(data);
   }
   
 }
@@ -160,7 +159,6 @@ async function getQuotes() {
   let quoteNum = getRandomNum(0, 1547);
   quote.textContent = data[quoteNum].text;
   author.textContent = data[quoteNum].author;
-  // console.log(data);
 }
 getQuotes();
 
@@ -177,42 +175,65 @@ function toggleBtn() {
 function playAudio() {
   playListContainer.children[playNum].classList.add('item-active');
   audio.src = playList[playNum].src;
-  audio.currentTime = 0;
-  console.log(playNum)
+  // audio.currentTime = 0;
+  durationTime.textContent = playList[playNum].duration;
+  
+  
+  trackTitle.textContent = playList[playNum].title;
   audio.addEventListener('ended', playNext);
   if(!isPlay) {
     audio.play();
     isPlay = true;
-   
+    audio.currentTime = progressBar.value;
+    progressBar.classList.add('progressBar-active');
+    audio.addEventListener('timeupdate', () => {
+    document.querySelector('.currentTime').innerHTML = (formatTime(audio.currentTime));
+    progressBar.value = audio.currentTime;
+    });
   } else {
     audio.pause();
+    audio.currentTime = progressBar.value;
     isPlay = false;
-    
   }
   
+  
 }
-
+function formatTime(seconds) {
+  let min = Math.floor((seconds / 60));
+  let sec = Math.floor(seconds - (min * 60));
+  if (sec < 10){ 
+      sec  = `0${sec}`;
+  };
+  return `0${min}:${sec}`;
+};
 
 function playAudioPrevNext() {
   audio.src = playList[playNum].src;
-  // console.log(playList[playNum].src);
+  durationTime.textContent = playList[playNum].duration;
+  document.querySelector('.currentTime').textContent = audio.currentTime;
+  trackTitle.textContent = playList[playNum].title;
+  
   audio.currentTime = 0;
   if (!isPlay) {
     audio.play();
     isPlay = true;
     playBtn.classList.add('pause');
-    // playListContainer.children[playNum].classList.toggle('item-active')
+    progressBar.classList.add('progressBar-active');
+    audio.addEventListener('timeupdate', () => {
+    document.querySelector('.currentTime').innerHTML = (formatTime(audio.currentTime));
+    progressBar.value = audio.currentTime;
+    });
+    
   } else {
     audio.play(); 
-    // playListContainer.children[playNum].classList.remove('item-active');
   }
 }
 function playNext() {
   playListContainer.children[playNum].classList.remove('item-active');
-  console.log(playNum)
+  
   if (playNum <= 4) {
     playNum++;
-    console.log(playNum);
+    
   }
   if (playNum === 4) {
     playNum = 0;
@@ -223,6 +244,8 @@ function playNext() {
   playAudioPrevNext();
 }
 
+// playListContainer.children[playNum].addEventListener('click', playAudio);
+
 function playPrev() {
   playListContainer.children[playNum].classList.remove('item-active');
   if(playNum < 1) {
@@ -232,7 +255,6 @@ function playPrev() {
     playNum--;
   }
   
-  // console.log(playNum);
   playListContainer.children[playNum].classList.add('item-active');
   playAudioPrevNext();
 }
@@ -252,8 +274,28 @@ playList.forEach(el => {
   li.classList.add('play-item');
   li.textContent = el.title;
   playListContainer.append(li);
+  // li.addEventListener('click',  () => {
+    
+  // });
 });
 
+const soundOff = document.querySelector('.sound-off');
+function turnSoundOff() {
+  soundOff.classList.toggle('active');
+  audio.volume = 0;
+  turnSoundOn()
+}
+function turnSoundOn() {
+  if(!soundOff.classList.contains('active')){
+    audio.volume = 1;
+  }
+  soundOff.addEventListener('click', turnSoundOn);  
+  
+}
+
+soundOff.addEventListener('click', turnSoundOff);
 
 
-
+progressBar.addEventListener('change', () => {
+  audio.currentTime = progressBar.value;
+})

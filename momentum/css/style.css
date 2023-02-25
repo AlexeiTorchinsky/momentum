@@ -31,12 +31,84 @@ body {
   padding: 20px;
 }
 
+.player {
+  position: relative;
+}
 .player-controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 120px;
-  margin-bottom: 28px;
+  width: 150px;
+  margin-bottom: 20px;
+}
+.sound-off {
+  background-image: url('../assets/svg/silent-line-icon.svg');
+}
+.active {
+  background-image: url('../assets/svg/silent-line-icon-active.svg');
+}
+.title {
+  font-size: 12px;
+  font-style: italic;
+  color: #C5B358;
+  position: absolute;
+  top: 49px
+}
+.progressBar {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 5px;
+  background-color: #cccfcd;
+  width: 130pt;
+  border-radius: 30px;
+  margin-bottom: 30px;
+  visibility: hidden;
+}
+.progressBar-active {
+  visibility: visible;
+}
+.progressBar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* margin-top: -3px;
+  margin-left: 0px; */
+  height: 17px;
+  width: 10px;
+  border: 0;
+  background: rgb(213, 213, 213);
+  border-radius: 30px;
+  cursor: pointer;
+}
+.progressBar::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  /* max-height: 5px; */
+  border-radius: 30px;
+}
+.currentTime {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+  top: 80px;
+  left: 130px;
+  
+  z-index: 4;
+  font-size: 13px;
+  color: #C5B358;
+  align-items: center;
+}
+
+/* style for the total length of the track */
+.durationTime {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+  top: 49px;
+  left: 130px;
+  z-index: 4;
+  font-size: 13px;
+  align-items: center;
+  color:  #cccfcd;
 }
 
 .play-list {
